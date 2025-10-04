@@ -1,6 +1,6 @@
-import { checkIn } from "@/server-actions/wellness";
 import { supabaseServer } from "@/lib/supabase/server";
-import { Suspense } from "react";
+import Card, { CardTitle, CardDescription } from "@/components/ui/Card";
+import CheckInForm from "./CheckInForm";
 
 export default async function WellnessPage() {
   const supabase = await supabaseServer();
@@ -12,47 +12,70 @@ export default async function WellnessPage() {
     currentDays = s?.current_days ?? 0;
     longestDays = s?.longest_days ?? 0;
   }
-  async function action(form: FormData) {
-    "use server";
-    const mood = Number(form.get("mood"));
-    const note = (form.get("note") as string | null) ?? undefined;
-    if (![1, 2, 3, 4, 5].includes(mood)) throw new Error("Invalid mood");
-    await checkIn(mood as 1 | 2 | 3 | 4 | 5, note);
-  }
 
   return (
-    <main className="mx-auto max-w-3xl p-6 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-8">
-      <h1 className="text-2xl font-semibold mb-3">Daily check-in</h1>
-      <form action={action} className="space-y-3">
-        <label className="block">
-          <span className="text-sm">Mood (1-5)</span>
-          <input
-            type="number"
-            name="mood"
-            min={1}
-            max={5}
-            required
-            className="border w-full p-2 rounded"
-          />
-        </label>
-        <textarea
-          name="note"
-          placeholder="Optional private note"
-          className="border w-full p-2 rounded"
-          rows={3}
-        />
-        <button className="bg-black text-white px-4 py-2 rounded">Check in</button>
-      </form>
+    <main className="min-h-screen p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="heading-1 mb-2">Daily Check-in</h1>
+          <p className="text-muted">How are you feeling today?</p>
+        </div>
 
-      <aside className="md:col-start-2 space-y-4">
-        <section className="border rounded p-3">
-          <h2 className="font-medium mb-1">Your streak</h2>
-          <div className="text-3xl">{currentDays} day{currentDays === 1 ? "" : "s"}</div>
-          <div className="text-sm opacity-70">Longest: {longestDays}</div>
-        </section>
-        <Badges supabaseUserId={user?.id ?? null} />
-        <TeamPulse />
-      </aside>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+          {/* Main Check-in Form */}
+          <div className="space-y-6">
+            <Card>
+              <CardTitle className="mb-2">Your Mood</CardTitle>
+              <CardDescription className="mb-6">
+                Select how you&apos;re feeling today
+              </CardDescription>
+
+              <CheckInForm />
+            </Card>
+
+            {/* Disclaimer */}
+            <Card className="bg-soft-lavender/10 border-soft-lavender/40">
+              <div className="flex gap-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-soft-lavender flex-shrink-0">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <div>
+                  <CardTitle className="mb-2 text-base">Not a Mental Health Service</CardTitle>
+                  <p className="text-sm text-muted">
+                    TaskNest is a productivity tool, not a mental health service. If you&apos;re struggling,
+                    please reach out to campus counseling or call a crisis helpline.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <aside className="space-y-6">
+            {/* Streak Card */}
+            <Card className="bg-warm-coral/10 border-warm-coral/40">
+              <div className="flex items-center justify-between mb-4">
+                <CardTitle>Your Streak</CardTitle>
+                <div className="text-4xl animate-flicker">🔥</div>
+              </div>
+              <div className="flex items-baseline gap-2 mb-2">
+                <div className="text-5xl font-bold text-warm-coral">{currentDays}</div>
+                <div className="text-muted">day{currentDays === 1 ? "" : "s"}</div>
+              </div>
+              <div className="text-sm text-muted">Longest streak: {longestDays} days</div>
+            </Card>
+
+            {/* Badges */}
+            <Badges supabaseUserId={user?.id ?? null} />
+
+            {/* Team Pulse */}
+            <TeamPulse />
+          </aside>
+        </div>
+      </div>
     </main>
   );
 }
@@ -65,35 +88,50 @@ async function Badges({ supabaseUserId }: { supabaseUserId: string | null }) {
     .select("kind")
     .eq("user_id", supabaseUserId);
   const kinds = new Set((rewards ?? []).map((r) => r.kind as string));
+
   return (
-    <section className="border rounded p-3">
-      <h2 className="font-medium mb-2">Badges</h2>
-      <ul className="text-sm space-y-1">
-        <li>{kinds.has("streak_7") ? "🏅" : "⬜️"} 7-day streak</li>
-        <li>{kinds.has("streak_30") ? "🏆" : "⬜️"} 30-day streak</li>
-      </ul>
-    </section>
+    <Card>
+      <CardTitle className="mb-4">Badges</CardTitle>
+      <div className="grid grid-cols-2 gap-3">
+        <div className={`flex flex-col items-center justify-center p-4 bg-background rounded-[6px] border-2 ${
+          kinds.has("streak_7") ? "border-mustard-yellow" : "border-border opacity-50"
+        }`}>
+          <div className="text-3xl mb-2">🏅</div>
+          <div className="text-xs text-center font-medium">7-day streak</div>
+        </div>
+        <div className={`flex flex-col items-center justify-center p-4 bg-background rounded-[6px] border-2 ${
+          kinds.has("streak_30") ? "border-mustard-yellow" : "border-border opacity-50"
+        }`}>
+          <div className="text-3xl mb-2">🏆</div>
+          <div className="text-xs text-center font-medium">30-day streak</div>
+        </div>
+      </div>
+    </Card>
   );
 }
 
 async function TeamPulse() {
-  // MVP server-side aggregate: last 14 days avg among tasks/checkins you can see
   const supabase = await supabaseServer();
   const since = new Date();
   since.setDate(since.getDate() - 14);
-  // For MVP, show only your own checkins average
   const { data: my } = await supabase
     .from("checkins")
     .select("mood")
     .gte("created_at", since.toISOString());
   const moods = (my ?? []).map((m) => m.mood as number);
-  const avg = moods.length ? (moods.reduce((a, b) => a + b, 0) / moods.length).toFixed(2) : "-";
+  const avg = moods.length ? (moods.reduce((a, b) => a + b, 0) / moods.length).toFixed(1) : "-";
+
   return (
-    <section className="border rounded p-3">
-      <h2 className="font-medium mb-1">Team pulse (MVP)</h2>
-      <div className="text-sm opacity-70">Avg mood (last 14 days)</div>
-      <div className="text-2xl">{avg}</div>
-      <div className="text-xs opacity-60">This MVP shows your own average; an RPC can compute team-wide averages safely later.</div>
-    </section>
+    <Card>
+      <CardTitle className="mb-2">Team Pulse</CardTitle>
+      <CardDescription className="mb-4">Your average (last 14 days)</CardDescription>
+      <div className="flex items-baseline gap-2">
+        <div className="text-4xl font-bold text-soft-lavender">{avg}</div>
+        <div className="text-muted">/ 5</div>
+      </div>
+      <div className="mt-3 text-xs text-muted">
+        MVP shows your own average. Team-wide aggregates coming soon.
+      </div>
+    </Card>
   );
 }

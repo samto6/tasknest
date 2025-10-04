@@ -1,26 +1,304 @@
 @import "tailwindcss";
 
+/* ============================================
+   TASKNEST DESIGN SYSTEM
+   Visually distinctive, student-friendly design
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand Colors - Soft, Non-Corporate Palette */
+  --sage-green: #84A98C;
+  --soft-lavender: #B4A7D6;
+  --warm-coral: #F4978E;
+  --mustard-yellow: #F2CC8F;
+  --dusty-rose: #E07A5F;
+  --mint-green: #81B29A;
+
+  /* Neutrals - Warm Tones */
+  --cream: #FAF8F5;
+  --warm-white: #FFFCF9;
+  --charcoal: #2D3142;
+  --warm-gray-100: #F5F3F0;
+  --warm-gray-200: #E8E5E1;
+  --warm-gray-300: #D1CBC4;
+  --warm-gray-400: #A8A19A;
+  --warm-gray-500: #7A7570;
+  --warm-gray-600: #5A5450;
+
+  /* Semantic Colors */
+  --color-primary: var(--sage-green);
+  --color-wellness: var(--soft-lavender);
+  --color-streak: var(--warm-coral);
+  --color-badge: var(--mustard-yellow);
+  --color-overdue: var(--dusty-rose);
+  --color-success: var(--mint-green);
+
+  /* Light Mode */
+  --background: var(--warm-white);
+  --foreground: var(--charcoal);
+  --surface: var(--cream);
+  --border: var(--warm-gray-300);
+  --muted: var(--warm-gray-500);
+
+  /* Shadows - Asymmetric, Visible */
+  --shadow-sm: 2px 2px 0px rgba(45, 49, 66, 0.1);
+  --shadow-md: 4px 4px 0px rgba(45, 49, 66, 0.15);
+  --shadow-lg: 6px 6px 0px rgba(45, 49, 66, 0.2);
+  --shadow-xl: 8px 8px 0px rgba(45, 49, 66, 0.25);
+
+  /* Spacing Scale (4px grid) */
+  --space-xs: 0.25rem;   /* 4px */
+  --space-sm: 0.5rem;    /* 8px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --space-3xl: 4rem;     /* 64px */
+
+  /* Border Radius - Subtle, Not Fully Rounded */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Typography Scale */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 2rem;      /* 32px */
+  --text-4xl: 2.5rem;    /* 40px */
+  --text-5xl: 3rem;      /* 48px */
+  --text-6xl: 4rem;      /* 64px */
+  --text-7xl: 4.5rem;    /* 72px */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Tailwind Theme Configuration */
+@theme {
+  /* Semantic Colors - Light Mode */
+  --color-background: #FFFCF9;
+  --color-foreground: #2D3142;
+  --color-surface: #FAF8F5;
+  --color-border: #D1CBC4;
+  --color-muted: #7A7570;
+
+  /* Brand Colors (static hex values for Tailwind utilities) */
+  --color-sage-green: #84A98C;
+  --color-soft-lavender: #B4A7D6;
+  --color-warm-coral: #F4978E;
+  --color-mustard-yellow: #F2CC8F;
+  --color-dusty-rose: #E07A5F;
+  --color-mint-green: #81B29A;
+
+  /* Warm Gray Scale */
+  --color-warm-gray-100: #F5F3F0;
+  --color-warm-gray-200: #E8E5E1;
+  --color-warm-gray-300: #D1CBC4;
+  --color-warm-gray-400: #A8A19A;
+  --color-warm-gray-500: #7A7570;
+  --color-warm-gray-600: #5A5450;
 }
 
+/* Dark Mode - Low-Light Aesthetic with Warm Tones */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Override semantic colors for dark mode */
+    --color-background: #1A1A1E;
+    --color-foreground: #E8E5E1;
+    --color-surface: #23232A;
+    --color-border: #3A3A42;
+    --color-muted: #A8A19A;
+
+    /* Legacy variables for direct use */
+    --background: #1A1A1E;
+    --foreground: #E8E5E1;
+    --surface: #23232A;
+    --border: #3A3A42;
+    --muted: #A8A19A;
+
+    /* Adjust shadows for dark mode */
+    --shadow-sm: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    --shadow-md: 4px 4px 0px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 6px 6px 0px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 8px 8px 0px rgba(0, 0, 0, 0.6);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Grain Texture Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Typography Utilities */
+.heading-display {
+  font-size: var(--text-7xl);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.heading-1 {
+  font-size: var(--text-5xl);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.heading-2 {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.heading-3 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Focus Styles - Thick, Colorful Rings */
+*:focus-visible {
+  outline: 3px solid var(--sage-green);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Animations */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -20px) scale(1.1);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(1.1);
+  }
+}
+
+.animate-toast-slide-in {
+  animation: toast-slide-in 0.3s ease-out;
+}
+
+.animate-confetti {
+  animation: confetti-fall 3s linear forwards;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-flicker {
+  animation: flicker 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 10s ease-in-out infinite;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--surface);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }

@@ -1,8 +1,8 @@
 "use client";
-import Image from "next/image";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useCallback, useEffect, useState } from "react";
 import { sanitizeSupabaseStorage } from "@/lib/supabase/cleanup";
+import Button from "@/components/ui/Button";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -25,109 +25,97 @@ export default function Home() {
       setLoading(false);
     }
   }, []);
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <button
-            onClick={signInWithGitHub}
-            disabled={loading}
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center bg-black text-white dark:bg-white dark:text-black hover:opacity-90 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto"
-          >
-            {loading ? "Redirecting…" : "Sign in with GitHub"}
-          </button>
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-6 py-20">
+        {/* Floating Shapes Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-soft-lavender/20 rounded-full blur-2xl animate-float" />
+          <div className="absolute top-40 right-20 w-40 h-40 bg-sage-green/20 rounded-full blur-2xl animate-float-delayed" />
+          <div className="absolute bottom-20 left-1/4 w-36 h-36 bg-warm-coral/20 rounded-full blur-2xl animate-float" />
+          <div className="absolute bottom-40 right-1/3 w-28 h-28 bg-mustard-yellow/20 rounded-full blur-2xl animate-float-delayed" />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h1 className="heading-display mb-6">
+              TaskNest
+            </h1>
+            <p className="text-xl md:text-2xl text-muted max-w-2xl mx-auto mb-8">
+              Tidy teamwork: projects, tasks, and wellness in one place. Built for student teams who want to stay organized without the corporate overhead.
+            </p>
+            <Button
+              size="lg"
+              onClick={signInWithGitHub}
+              loading={loading}
+              className="text-lg px-8 py-4"
+            >
+              Sign in with GitHub
+            </Button>
+          </div>
+
+          {/* Bento Grid Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto mt-20">
+            {/* Large Card - Tasks */}
+            <div className="md:col-span-2 md:row-span-2 bg-surface border-2 border-border rounded-[12px] p-8 shadow-[6px_6px_0px_rgba(45,49,66,0.15)]">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="p-3 bg-sage-green/20 rounded-[8px] border-2 border-sage-green/40">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-sage-green">
+                    <polyline points="9 11 12 14 22 4" />
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="heading-3 mb-2">Shared Task Management</h3>
+                  <p className="text-muted">Create tasks, assign teammates, set deadlines. Filter by milestone, status, or assignee. Comments with @mentions keep everyone in the loop.</p>
+                </div>
+              </div>
+              <div className="mt-6 space-y-2">
+                <div className="flex items-center gap-3 p-3 bg-background/50 rounded-[6px] border-l-4 border-sage-green">
+                  <div className="w-4 h-4 rounded-full bg-sage-green" />
+                  <span className="text-sm font-medium flex-1">Design mockups</span>
+                  <span className="text-xs text-muted">Due today</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-background/50 rounded-[6px] border-l-4 border-warm-gray-300">
+                  <div className="w-4 h-4 rounded-full border-2 border-warm-gray-400" />
+                  <span className="text-sm font-medium flex-1">User research</span>
+                  <span className="text-xs text-muted">This week</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Wellness Card */}
+            <div className="bg-surface border-2 border-border rounded-[12px] p-6 shadow-[4px_4px_0px_rgba(45,49,66,0.15)]">
+              <div className="p-3 bg-soft-lavender/20 rounded-[8px] border-2 border-soft-lavender/40 w-fit mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-soft-lavender">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </div>
+              <h3 className="heading-3 mb-2">Wellness Check-ins</h3>
+              <p className="text-muted text-sm">Daily mood tracking with private notes. See your team&apos;s pulse without compromising privacy.</p>
+            </div>
+
+            {/* Gamification Card */}
+            <div className="bg-surface border-2 border-border rounded-[12px] p-6 shadow-[4px_4px_0px_rgba(45,49,66,0.15)]">
+              <div className="p-3 bg-warm-coral/20 rounded-[8px] border-2 border-warm-coral/40 w-fit mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-warm-coral">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                </svg>
+              </div>
+              <h3 className="heading-3 mb-2">Streaks & Badges</h3>
+              <p className="text-muted text-sm">Build momentum with daily check-ins and on-time completions. Unlock achievements as you go.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t-2 border-border py-8 px-6">
+        <div className="max-w-7xl mx-auto text-center text-sm text-muted">
+          <p>Built for student teams. Not a mental-health service — just a tool to help you stay organized.</p>
+        </div>
       </footer>
     </div>
   );

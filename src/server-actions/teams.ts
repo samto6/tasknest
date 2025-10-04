@@ -33,7 +33,7 @@ export async function createTeam(form: FormData) {
   const teamId = randomUUID();
   const { error } = await supabase
     .from("teams")
-    .insert({ id: teamId, name, invite_code }, { returning: "minimal" });
+    .insert({ id: teamId, name, invite_code });
   if (error) throw error;
 
   // create default prefs if missing (idempotent)

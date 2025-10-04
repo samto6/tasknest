@@ -1,21 +1,25 @@
 "use client";
-import { useState } from "react";
+import Button from "@/components/ui/Button";
+import { useToast } from "@/components/ui";
 
 export default function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
+
   return (
-    <button
-      className="border px-3 py-2 rounded"
+    <Button
       type="button"
+      variant="secondary"
+      size="sm"
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(text);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        } catch {}
+          showToast("Copied to clipboard!", "success");
+        } catch {
+          showToast("Failed to copy", "error");
+        }
       }}
     >
-      {copied ? "Copied" : "Copy"}
-    </button>
+      Copy
+    </Button>
   );
 }
