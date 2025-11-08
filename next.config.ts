@@ -9,7 +9,7 @@ const config = withBundleAnalyzer({
       bodySizeLimit: "2mb",
     },
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config: any, { isServer }: { isServer: boolean }) => {
     if (isServer) {
       // Suppress warnings about Node.js APIs in Edge Runtime for Supabase
       config.ignoreWarnings = [
