@@ -1,29 +1,14 @@
 "use client";
-import { supabaseBrowser } from "@/lib/supabase/client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { sanitizeSupabaseStorage } from "@/lib/supabase/cleanup";
 import Button from "@/components/ui/Button";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     sanitizeSupabaseStorage();
-  }, []);
-
-  const signInWithGitHub = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabaseBrowser().auth.signInWithOAuth({
-        provider: "github",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
-      if (error) console.error("OAuth error:", error.message);
-    } finally {
-      setLoading(false);
-    }
   }, []);
 
   return (
@@ -44,20 +29,19 @@ export default function Home() {
               TaskNest
             </h1>
             <p className="text-xl md:text-2xl text-muted max-w-2xl mx-auto mb-8">
-              Tidy teamwork: projects, tasks, and wellness in one place. Built for student teams who want to stay organized without the corporate overhead.
+              Plan semester-long projects with confidence. Timeline tracking, task management, and team wellness—built for student groups.
             </p>
             <Button
               size="lg"
-              onClick={signInWithGitHub}
-              loading={loading}
+              onClick={() => router.push('/signup')}
               className="text-lg px-8 py-4"
             >
-              Sign in with GitHub
+              Get Started
             </Button>
           </div>
 
           {/* Bento Grid Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto mt-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto mt-20">
             {/* Large Card - Tasks */}
             <div className="md:col-span-2 md:row-span-2 bg-surface border-2 border-border rounded-[12px] p-8 shadow-[6px_6px_0px_rgba(45,49,66,0.15)]">
               <div className="flex items-start gap-3 mb-4">
@@ -106,6 +90,20 @@ export default function Home() {
               </div>
               <h3 className="heading-3 mb-2">Streaks & Badges</h3>
               <p className="text-muted text-sm">Build momentum with daily check-ins and on-time completions. Unlock achievements as you go.</p>
+            </div>
+
+            {/* Timeline Card */}
+            <div className="bg-surface border-2 border-border rounded-[12px] p-6 shadow-[4px_4px_0px_rgba(45,49,66,0.15)]">
+              <div className="p-3 bg-mustard-yellow/20 rounded-[8px] border-2 border-mustard-yellow/40 w-fit mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-mustard-yellow">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </div>
+              <h3 className="heading-3 mb-2">Semester Timeline</h3>
+              <p className="text-muted text-sm">Plan your entire semester with week-by-week task breakdown. Track milestones and visualize deadlines that align with your project due dates.</p>
             </div>
           </div>
         </div>
