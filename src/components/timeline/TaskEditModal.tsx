@@ -47,7 +47,7 @@ export default function TaskEditModal({ taskId, onClose, onUpdate }: Props) {
           </p>
 
           <div className="flex gap-3 justify-end">
-            <Button variant="outline" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose}>
               Cancel
             </Button>
             <Button

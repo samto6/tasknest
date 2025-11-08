@@ -9,6 +9,15 @@ const config = withBundleAnalyzer({
       bodySizeLimit: "2mb",
     },
   },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Suppress warnings about Node.js APIs in Edge Runtime for Supabase
+      config.ignoreWarnings = [
+        { module: /node_modules\/@supabase\/realtime-js/ },
+      ];
+    }
+    return config;
+  },
 });
 
 module.exports = config;

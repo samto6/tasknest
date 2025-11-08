@@ -156,13 +156,13 @@ export default function CalendarGrid({ tasks, milestones, onTaskClick }: Props) 
           {monthNames[month]} {year}
         </h2>
         <div className="flex gap-2">
-          <Button onClick={goToToday} variant="outline" size="sm">
+          <Button onClick={goToToday} variant="secondary" size="sm">
             Today
           </Button>
-          <Button onClick={goToPreviousMonth} variant="outline" size="sm">
+          <Button onClick={goToPreviousMonth} variant="secondary" size="sm">
             ← Prev
           </Button>
-          <Button onClick={goToNextMonth} variant="outline" size="sm">
+          <Button onClick={goToNextMonth} variant="secondary" size="sm">
             Next →
           </Button>
         </div>
