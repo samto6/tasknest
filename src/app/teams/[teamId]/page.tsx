@@ -36,7 +36,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ tea
         {projects && projects.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">Projects</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {projects.map((project) => (
                 <Link key={project.id} href={`/projects/${project.id}/tasks`}>
                   <Card className="h-full hover:border-primary/50 transition-all cursor-pointer">
@@ -57,7 +57,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ tea
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Quick Actions */}
           <Card>
             <CardTitle className="mb-4">Quick Actions</CardTitle>
@@ -79,7 +79,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ tea
 
           {/* Invite Members */}
           {team?.invite_code ? (
-            <Card className="md:row-span-2">
+            <Card className="lg:row-span-2">
               <CardTitle className="mb-2">Invite Members</CardTitle>
               <CardDescription className="mb-6">
                 Share this code or URL with your teammates

@@ -8,9 +8,9 @@ type Props = {
 };
 
 export default function TimelineNav({ currentView, onViewChange }: Props) {
-  const tabs: { id: View; label: string; icon: string }[] = [
+  const tabs: { id: View; label: string; icon: string; hideOnMobile?: boolean }[] = [
     { id: "calendar", label: "Calendar", icon: "📅" },
-    { id: "gantt", label: "Timeline", icon: "📊" },
+    { id: "gantt", label: "Timeline", icon: "📊", hideOnMobile: true },
     { id: "weekly", label: "Weekly", icon: "📋" },
   ];
 
@@ -24,7 +24,7 @@ export default function TimelineNav({ currentView, onViewChange }: Props) {
             currentView === tab.id
               ? "text-sage-green"
               : "text-muted hover:text-foreground"
-          }`}
+          } ${tab.hideOnMobile ? "hidden md:flex" : "flex"}`}
         >
           <span>{tab.icon}</span>
           <span>{tab.label}</span>

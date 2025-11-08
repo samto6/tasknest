@@ -41,7 +41,7 @@ export default async function DashboardPage() {
           {/* Stats Overview */}
           <Card className="md:col-span-3">
             <CardTitle className="mb-4">Your Activity</CardTitle>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="text-3xl font-bold text-sage-green">{stats.completedTasks}</div>
                 <div className="text-sm text-muted mt-1">Tasks Completed</div>

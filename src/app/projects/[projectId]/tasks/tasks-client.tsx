@@ -79,11 +79,18 @@ function TaskRow({ task, onMarkDone }: { task: Task; onMarkDone: () => void }) {
 
   const statusColor = statusColors[task.status as keyof typeof statusColors] || statusColors.todo;
 
+  // Get border color class based on status
+  const getBorderClass = () => {
+    if (overdue) return "border-dusty-rose bg-dusty-rose/5";
+    if (task.status === "in_progress") return "border-sage-green";
+    if (task.status === "done") return "border-mint-green";
+    return "border-warm-gray-300";
+  };
+
   return (
     <div className={`
       bg-surface rounded-[8px] p-5
-      border-2 border-${statusColor.border}
-      ${overdue ? "border-dusty-rose bg-dusty-rose/5" : ""}
+      border-2 ${getBorderClass()}
       shadow-[4px_4px_0px_rgba(45,49,66,0.1)]
       transition-all duration-200
       hover:shadow-[6px_6px_0px_rgba(45,49,66,0.15)]

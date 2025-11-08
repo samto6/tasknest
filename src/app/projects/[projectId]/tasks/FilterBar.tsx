@@ -111,7 +111,7 @@ export default function FilterBar({ milestones, teamMembers }: FilterBarProps) {
               <select
                 value={currentAssignee}
                 onChange={(e) => updateFilter({ assignee: e.target.value, filter: "" })}
-                className="w-full px-3 py-2 bg-background border-2 border-border rounded-[6px] text-sm focus:border-primary focus:outline-none"
+                className="w-full px-3 py-2.5 bg-background border-2 border-border rounded-[6px] text-sm focus:border-sage-green focus:outline-none min-h-[44px]"
               >
                 <option value="">All members</option>
                 {teamMembers.map((member) => (
@@ -130,7 +130,7 @@ export default function FilterBar({ milestones, teamMembers }: FilterBarProps) {
               <select
                 value={currentMilestone}
                 onChange={(e) => updateFilter({ milestone_id: e.target.value, filter: "" })}
-                className="w-full px-3 py-2 bg-background border-2 border-border rounded-[6px] text-sm focus:border-primary focus:outline-none"
+                className="w-full px-3 py-2.5 bg-background border-2 border-border rounded-[6px] text-sm focus:border-sage-green focus:outline-none min-h-[44px]"
               >
                 <option value="">All milestones</option>
                 {milestones.map((milestone) => (
@@ -146,19 +146,19 @@ export default function FilterBar({ milestones, teamMembers }: FilterBarProps) {
               <label className="text-sm font-bold block mb-2">
                 Date Range
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="date"
                   value={currentDateFrom}
                   onChange={(e) => updateFilter({ date_from: e.target.value, filter: "" })}
-                  className="flex-1 px-2 py-2 bg-background border-2 border-border rounded-[6px] text-xs focus:border-primary focus:outline-none"
+                  className="flex-1 px-3 py-2.5 bg-background border-2 border-border rounded-[6px] text-sm focus:border-sage-green focus:outline-none min-h-[44px]"
                   placeholder="From"
                 />
                 <input
                   type="date"
                   value={currentDateTo}
                   onChange={(e) => updateFilter({ date_to: e.target.value, filter: "" })}
-                  className="flex-1 px-2 py-2 bg-background border-2 border-border rounded-[6px] text-xs focus:border-primary focus:outline-none"
+                  className="flex-1 px-3 py-2.5 bg-background border-2 border-border rounded-[6px] text-sm focus:border-sage-green focus:outline-none min-h-[44px]"
                   placeholder="To"
                 />
               </div>

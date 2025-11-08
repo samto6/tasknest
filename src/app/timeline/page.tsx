@@ -1,19 +1,54 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { getPersonalTimeline, TimelineData } from "@/server-actions/timeline";
 import TimelineNav from "@/components/timeline/TimelineNav";
-import CalendarGrid from "@/components/timeline/CalendarGrid";
-import GanttChart from "@/components/timeline/GanttChart";
-import WeeklyBreakdown from "@/components/timeline/WeeklyBreakdown";
-import TaskEditModal from "@/components/timeline/TaskEditModal";
+
+// Lazy load heavy timeline components for better performance
+const CalendarGrid = lazy(() => import("@/components/timeline/CalendarGrid"));
+const GanttChart = lazy(() => import("@/components/timeline/GanttChart"));
+const WeeklyBreakdown = lazy(() => import("@/components/timeline/WeeklyBreakdown"));
+const TaskEditModal = lazy(() => import("@/components/timeline/TaskEditModal"));
 
 type View = "calendar" | "gantt" | "weekly";
+
+// Loading skeleton for timeline views
+function TimelineLoadingSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-12 bg-surface rounded-lg w-full"></div>
+      <div className="grid grid-cols-7 gap-2">
+        {[...Array(35)].map((_, i) => (
+          <div key={i} className="h-24 bg-surface rounded-lg"></div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function PersonalTimelinePage() {
   const [currentView, setCurrentView] = useState<View>("weekly");
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [timelineData, setTimelineData] = useState<TimelineData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Auto-switch from Gantt to Weekly on mobile
+  useEffect(() => {
+    if (isMobile && currentView === "gantt") {
+      setCurrentView("weekly");
+    }
+  }, [isMobile, currentView]);
 
   useEffect(() => {
     async function fetchTimeline() {
@@ -103,39 +138,43 @@ export default function PersonalTimelinePage() {
         <TimelineNav currentView={currentView} onViewChange={setCurrentView} />
 
         {/* Timeline Views */}
-        {currentView === "calendar" && (
-          <CalendarGrid
-            tasks={timelineData.tasks}
-            milestones={timelineData.milestones}
-            onTaskClick={handleTaskClick}
-          />
-        )}
+        <Suspense fallback={<TimelineLoadingSkeleton />}>
+          {currentView === "calendar" && (
+            <CalendarGrid
+              tasks={timelineData.tasks}
+              milestones={timelineData.milestones}
+              onTaskClick={handleTaskClick}
+            />
+          )}
 
-        {currentView === "gantt" && (
-          <GanttChart
-            tasks={timelineData.tasks}
-            milestones={timelineData.milestones}
-            onTaskClick={handleTaskClick}
-          />
-        )}
+          {currentView === "gantt" && (
+            <GanttChart
+              tasks={timelineData.tasks}
+              milestones={timelineData.milestones}
+              onTaskClick={handleTaskClick}
+            />
+          )}
 
-        {currentView === "weekly" && (
-          <WeeklyBreakdown
-            tasks={timelineData.tasks}
-            milestones={timelineData.milestones}
-            onTaskClick={handleTaskClick}
-          />
-        )}
+          {currentView === "weekly" && (
+            <WeeklyBreakdown
+              tasks={timelineData.tasks}
+              milestones={timelineData.milestones}
+              onTaskClick={handleTaskClick}
+            />
+          )}
+        </Suspense>
 
         {/* Task Edit Modal */}
-        <TaskEditModal
-          taskId={selectedTaskId}
-          onClose={() => setSelectedTaskId(null)}
-          onUpdate={() => {
-            // Refetch timeline data after update
-            getPersonalTimeline().then(setTimelineData);
-          }}
-        />
+        <Suspense fallback={null}>
+          <TaskEditModal
+            taskId={selectedTaskId}
+            onClose={() => setSelectedTaskId(null)}
+            onUpdate={() => {
+              // Refetch timeline data after update
+              getPersonalTimeline().then(setTimelineData);
+            }}
+          />
+        </Suspense>
       </div>
     </main>
   );

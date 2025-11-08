@@ -11,19 +11,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = "primary", size = "md", loading = false, className = "", children, disabled, ...props }, ref) => {
-    const baseStyles = "font-medium transition-all duration-150 active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0";
+    const baseStyles = "font-medium transition-all duration-150 active:translate-x-[2px] active:translate-y-[2px] active:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0 touch-manipulation select-none";
 
     const variantStyles = {
-      primary: "bg-sage-green text-white border-2 border-sage-green hover:bg-[#6D8A6F] hover:border-[#6D8A6F]",
-      secondary: "bg-transparent text-foreground border-2 border-border hover:bg-surface",
-      ghost: "bg-transparent text-foreground hover:bg-surface",
-      danger: "bg-dusty-rose text-white border-2 border-dusty-rose hover:bg-[#D46550] hover:border-[#D46550]",
+      primary: "bg-sage-green text-white border-2 border-sage-green hover:bg-[#6D8A6F] hover:border-[#6D8A6F] active:bg-[#5F7A61]",
+      secondary: "bg-transparent text-foreground border-2 border-border hover:bg-surface active:bg-surface/80",
+      ghost: "bg-transparent text-foreground hover:bg-surface active:bg-surface/80",
+      danger: "bg-dusty-rose text-white border-2 border-dusty-rose hover:bg-[#D46550] hover:border-[#D46550] active:bg-[#C05545]",
     };
 
     const sizeStyles = {
-      sm: "px-3 py-1.5 text-sm rounded-[6px]",
-      md: "px-4 py-2 text-base rounded-[8px]",
-      lg: "px-6 py-3 text-lg rounded-[8px]",
+      sm: "px-3 py-2 md:py-1.5 text-sm rounded-[6px] min-h-[44px] md:min-h-0",
+      md: "px-4 py-2.5 md:py-2 text-base rounded-[8px] min-h-[44px] md:min-h-0",
+      lg: "px-6 py-3 text-lg rounded-[8px] min-h-[44px]",
     };
 
     const shadowStyles = {

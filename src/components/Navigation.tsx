@@ -1,6 +1,7 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import Link from "next/link";
 import Button from "./ui/Button";
+import MobileMenu from "./MobileMenu";
 
 export default async function Navigation() {
   const supabase = await supabaseServer();
@@ -18,55 +19,60 @@ export default async function Navigation() {
             </div>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Desktop Navigation Links */}
           {user ? (
-            <div className="flex items-center gap-6">
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium text-muted hover:text-foreground transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/teams"
-                className="text-sm font-medium text-muted hover:text-foreground transition-colors"
-              >
-                Teams
-              </Link>
-              <Link
-                href="/timeline"
-                className="text-sm font-medium text-muted hover:text-foreground transition-colors"
-              >
-                Timeline
-              </Link>
-              <Link
-                href="/wellness"
-                className="text-sm font-medium text-muted hover:text-foreground transition-colors"
-              >
-                Wellness
-              </Link>
-              <Link
-                href="/settings"
-                className="text-sm font-medium text-muted hover:text-foreground transition-colors"
-              >
-                Settings
-              </Link>
+            <>
+              <div className="hidden md:flex items-center gap-6">
+                <Link
+                  href="/dashboard"
+                  className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/teams"
+                  className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+                >
+                  Teams
+                </Link>
+                <Link
+                  href="/timeline"
+                  className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+                >
+                  Timeline
+                </Link>
+                <Link
+                  href="/wellness"
+                  className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+                >
+                  Wellness
+                </Link>
+                <Link
+                  href="/settings"
+                  className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+                >
+                  Settings
+                </Link>
 
-              {/* User Menu */}
-              <div className="flex items-center gap-3 pl-3 border-l-2 border-border">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-sage-green/20 border-2 border-sage-green/40 flex items-center justify-center text-sm font-semibold text-sage-green">
-                    {user.email?.[0].toUpperCase() || "U"}
+                {/* User Menu */}
+                <div className="flex items-center gap-3 pl-3 border-l-2 border-border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-sage-green/20 border-2 border-sage-green/40 flex items-center justify-center text-sm font-semibold text-sage-green">
+                      {user.email?.[0].toUpperCase() || "U"}
+                    </div>
+                    <span className="text-sm text-muted">{user.email?.split("@")[0]}</span>
                   </div>
-                  <span className="text-sm text-muted hidden md:block">{user.email?.split("@")[0]}</span>
+                  <form action="/auth/signout" method="post">
+                    <Button type="submit" variant="ghost" size="sm">
+                      Sign out
+                    </Button>
+                  </form>
                 </div>
-                <form action="/auth/signout" method="post">
-                  <Button type="submit" variant="ghost" size="sm">
-                    Sign out
-                  </Button>
-                </form>
               </div>
-            </div>
+
+              {/* Mobile Menu */}
+              <MobileMenu user={user} />
+            </>
           ) : (
             <div className="flex items-center gap-4">
               <Link href="/login">
