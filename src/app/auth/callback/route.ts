@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
@@ -7,40 +7,16 @@ export async function GET(req: NextRequest) {
 
   // If no code provided, redirect to login immediately
   if (!code) {
+    console.error("[Auth Callback] No code parameter provided");
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("error", "missing_code");
     return NextResponse.redirect(loginUrl);
   }
 
-  // Store cookies in an array to apply later
-  const cookiesToSet: string[] = [];
+  console.log("[Auth Callback] Processing magic link code");
 
-  // Serialize cookies manually to avoid Next.js base64 wrapping, which
-  // breaks Supabase's JSON parsing in the browser helper.
-  function serializeCookie(
-    name: string,
-    value: string,
-    options: CookieOptions = {}
-  ) {
-    const segments: string[] = [];
-    // Encode value to be cookie-safe; Supabase expects to JSON.parse after decode
-    const encoded = encodeURIComponent(value);
-    segments.push(`${name}=${encoded}`);
-    if (options.maxAge !== undefined) segments.push(`Max-Age=${options.maxAge}`);
-    if (options.expires) segments.push(`Expires=${new Date(options.expires).toUTCString()}`);
-    if (options.path) segments.push(`Path=${options.path}`);
-    else segments.push(`Path=/`);
-    if (options.domain) segments.push(`Domain=${options.domain}`);
-    if (options.sameSite) {
-      const ss = typeof options.sameSite === "string" ? options.sameSite : (options.sameSite === true ? "Strict" : "Lax");
-      // Normalize case
-      const normalized = ss.charAt(0).toUpperCase() + ss.slice(1).toLowerCase();
-      segments.push(`SameSite=${normalized}`);
-    }
-    if (options.secure) segments.push("Secure");
-    if (options.httpOnly) segments.push("HttpOnly");
-    return segments.join("; ");
-  }
+  // Create response first - we'll attach cookies to it
+  let response = NextResponse.next();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,18 +26,30 @@ export async function GET(req: NextRequest) {
         get(name: string) {
           return req.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
+        set(name: string, value: string, options) {
           try {
-            cookiesToSet.push(serializeCookie(name, value, options));
-          } catch {
-            // Silently fail if cookies cannot be set
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+              sameSite: "lax",
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+            });
+          } catch (error) {
+            console.error("[Auth Callback] Failed to set cookie:", name, error);
           }
         },
-        remove(name: string, options: CookieOptions) {
+        remove(name: string, options) {
           try {
-            cookiesToSet.push(serializeCookie(name, "", { ...options, maxAge: 0, expires: new Date(0) }));
-          } catch {
-            // Silently fail if cookies cannot be removed
+            response.cookies.set({
+              name,
+              value: "",
+              ...options,
+              maxAge: 0,
+            });
+          } catch (error) {
+            console.error("[Auth Callback] Failed to remove cookie:", name, error);
           }
         },
       },
@@ -72,22 +60,25 @@ export async function GET(req: NextRequest) {
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   // Determine redirect destination based on result
-  let redirectUrl: URL;
   if (error || !data.session) {
     // If code exchange failed, redirect to login with error
-    console.error("Auth callback error:", error);
-    redirectUrl = new URL("/login", req.url);
+    console.error("[Auth Callback] Code exchange failed:", error?.message || "No session returned");
+    const redirectUrl = new URL("/login", req.url);
     redirectUrl.searchParams.set("error", "authentication_failed");
-  } else {
-    // Success - redirect to dashboard
-    redirectUrl = new URL("/dashboard", req.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Create redirect response and apply all cookies
-  const res = NextResponse.redirect(redirectUrl);
-  cookiesToSet.forEach(cookie => {
-    res.headers.append("Set-Cookie", cookie);
+  // Success - log and redirect to dashboard
+  console.log("[Auth Callback] Authentication successful, redirecting to dashboard");
+  const redirectUrl = new URL("/dashboard", req.url);
+
+  // Create new redirect response and copy cookies from the original response
+  const redirectResponse = NextResponse.redirect(redirectUrl);
+
+  // Copy all cookies from the response to the redirect response
+  response.cookies.getAll().forEach((cookie) => {
+    redirectResponse.cookies.set(cookie);
   });
 
-  return res;
+  return redirectResponse;
 }

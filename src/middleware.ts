@@ -1,35 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+  let response = NextResponse.next();
+  const pathname = req.nextUrl.pathname;
 
-  // Helper to serialize cookies without Next.js base64 wrapping
-  function serializeCookie(
-    name: string,
-    value: string,
-    options: CookieOptions = {}
-  ) {
-    const segments: string[] = [];
-    const encoded = encodeURIComponent(value);
-    segments.push(`${name}=${encoded}`);
-    if (options.maxAge !== undefined) segments.push(`Max-Age=${options.maxAge}`);
-    if (options.expires) segments.push(`Expires=${new Date(options.expires).toUTCString()}`);
-    if (options.path) segments.push(`Path=${options.path}`);
-    else segments.push(`Path=/`);
-    if (options.domain) segments.push(`Domain=${options.domain}`);
-    if (options.sameSite) {
-      const ss = typeof options.sameSite === "string" ? options.sameSite : (options.sameSite === true ? "Strict" : "Lax");
-      const normalized = ss.charAt(0).toUpperCase() + ss.slice(1).toLowerCase();
-      segments.push(`SameSite=${normalized}`);
-    }
-    if (options.secure) segments.push("Secure");
-    if (options.httpOnly) segments.push("HttpOnly");
-    return segments.join("; ");
-  }
-
-  // Use SSR client with custom cookie adapter to avoid base64-encoded cookies
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -38,21 +14,30 @@ export async function middleware(req: NextRequest) {
         get(name: string) {
           return req.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
+        set(name: string, value: string, options) {
           try {
-            res.headers.append("Set-Cookie", serializeCookie(name, value, options));
-          } catch {
-            // Silently fail if cookies cannot be set
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+              sameSite: "lax",
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+            });
+          } catch (error) {
+            console.error("[Middleware] Failed to set cookie:", name, error);
           }
         },
-        remove(name: string, options: CookieOptions) {
+        remove(name: string, options) {
           try {
-            res.headers.append(
-              "Set-Cookie",
-              serializeCookie(name, "", { ...options, maxAge: 0, expires: new Date(0) })
-            );
-          } catch {
-            // Silently fail if cookies cannot be removed
+            response.cookies.set({
+              name,
+              value: "",
+              ...options,
+              maxAge: 0,
+            });
+          } catch (error) {
+            console.error("[Middleware] Failed to remove cookie:", name, error);
           }
         },
       },
@@ -62,17 +47,29 @@ export async function middleware(req: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  const pathname = req.nextUrl.pathname;
 
   const protectedPaths = [/^\/dashboard/, /^\/teams/, /^\/projects/, /^\/wellness/, /^\/notifications/, /^\/settings/, /^\/timeline/];
   const isProtected = protectedPaths.some((re) => re.test(pathname));
 
   if (isProtected && !session) {
+    console.log("[Middleware] No session found for protected path:", pathname);
     const url = req.nextUrl.clone();
     url.pathname = "/login";
-    return NextResponse.redirect(url);
+
+    // Create redirect response and copy any cookies that were set
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+
+    return redirectResponse;
   }
-  return res;
+
+  if (session) {
+    console.log("[Middleware] Session found for user:", session.user.email);
+  }
+
+  return response;
 }
 
 export const config = {
