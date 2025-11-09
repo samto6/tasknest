@@ -5,9 +5,15 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
 
-  // Create the redirect response up-front so we can attach cookies to it
-  const redirectUrl = new URL("/dashboard", req.url);
-  const res = NextResponse.redirect(redirectUrl);
+  // If no code provided, redirect to login immediately
+  if (!code) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("error", "missing_code");
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Store cookies in an array to apply later
+  const cookiesToSet: string[] = [];
 
   // Serialize cookies manually to avoid Next.js base64 wrapping, which
   // breaks Supabase's JSON parsing in the browser helper.
@@ -46,17 +52,14 @@ export async function GET(req: NextRequest) {
         },
         set(name: string, value: string, options: CookieOptions) {
           try {
-            res.headers.append("Set-Cookie", serializeCookie(name, value, options));
+            cookiesToSet.push(serializeCookie(name, value, options));
           } catch {
             // Silently fail if cookies cannot be set
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
-            res.headers.append(
-              "Set-Cookie",
-              serializeCookie(name, "", { ...options, maxAge: 0, expires: new Date(0) })
-            );
+            cookiesToSet.push(serializeCookie(name, "", { ...options, maxAge: 0, expires: new Date(0) }));
           } catch {
             // Silently fail if cookies cannot be removed
           }
@@ -65,10 +68,26 @@ export async function GET(req: NextRequest) {
     }
   );
 
-  if (code) {
-    await supabase.auth.exchangeCodeForSession(code);
+  // Exchange code for session
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+  // Determine redirect destination based on result
+  let redirectUrl: URL;
+  if (error || !data.session) {
+    // If code exchange failed, redirect to login with error
+    console.error("Auth callback error:", error);
+    redirectUrl = new URL("/login", req.url);
+    redirectUrl.searchParams.set("error", "authentication_failed");
+  } else {
+    // Success - redirect to dashboard
+    redirectUrl = new URL("/dashboard", req.url);
   }
 
-  // Return the redirect response with any Set-Cookie headers
+  // Create redirect response and apply all cookies
+  const res = NextResponse.redirect(redirectUrl);
+  cookiesToSet.forEach(cookie => {
+    res.headers.append("Set-Cookie", cookie);
+  });
+
   return res;
 }
