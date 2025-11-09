@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(req: NextRequest) {
-  let response = NextResponse.next();
+  const response = NextResponse.next();
   const pathname = req.nextUrl.pathname;
 
   const supabase = createServerClient(

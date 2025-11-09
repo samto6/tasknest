@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function POST(req: NextRequest) {
-  let response = NextResponse.json({ success: true });
+  const response = NextResponse.json({ success: true });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Attempt to refresh the session
-    const { data, error } = await supabase.auth.refreshSession();
+    const { error } = await supabase.auth.refreshSession();
 
     if (error) {
       console.error("[Auth Refresh] Failed to refresh session:", error.message);

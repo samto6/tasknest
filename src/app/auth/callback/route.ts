@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   console.log("[Auth Callback] Processing magic link code");
 
   // Create response first - we'll attach cookies to it
-  let response = NextResponse.next();
+  const response = NextResponse.next();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
