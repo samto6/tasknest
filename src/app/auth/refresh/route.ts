@@ -43,6 +43,14 @@ export async function POST(req: NextRequest) {
   );
 
   try {
+    // First check if we have a session to refresh
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      // No session to refresh - this is normal for logged-out users
+      return NextResponse.json({ success: false, error: "No session" }, { status: 401 });
+    }
+
     // Attempt to refresh the session
     const { error } = await supabase.auth.refreshSession();
 

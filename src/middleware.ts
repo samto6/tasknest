@@ -45,14 +45,14 @@ export async function middleware(req: NextRequest) {
   );
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const protectedPaths = [/^\/dashboard/, /^\/teams/, /^\/projects/, /^\/wellness/, /^\/notifications/, /^\/settings/, /^\/timeline/];
   const isProtected = protectedPaths.some((re) => re.test(pathname));
 
-  if (isProtected && !session) {
-    console.log("[Middleware] No session found for protected path:", pathname);
+  if (isProtected && !user) {
+    console.log("[Middleware] No user found for protected path:", pathname);
     const url = req.nextUrl.clone();
     url.pathname = "/login";
 
@@ -65,8 +65,8 @@ export async function middleware(req: NextRequest) {
     return redirectResponse;
   }
 
-  if (session) {
-    console.log("[Middleware] Session found for user:", session.user.email);
+  if (user) {
+    console.log("[Middleware] User authenticated:", user.email);
   }
 
   return response;
