@@ -40,17 +40,14 @@ function AuthCallbackContent() {
     try {
       const supabase = supabaseBrowser();
 
-      if (code) {
-        // PKCE flow - exchange code for session
-        const { error: authError } = await supabase.auth.exchangeCodeForSession(code);
+      // Check if already authenticated (e.g., via auto-detection from hash fragment)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push("/dashboard");
+        return;
+      }
 
-        if (authError) {
-          console.error("[Auth Callback] Code exchange failed:", authError.message);
-          setError(authError.message || "Authentication failed");
-          setIsLoading(false);
-          return;
-        }
-      } else if (token_hash && type) {
+      if (token_hash && type) {
         // Token hash flow - verify OTP
         const { error: authError } = await supabase.auth.verifyOtp({
           token_hash,
@@ -59,6 +56,16 @@ function AuthCallbackContent() {
 
         if (authError) {
           console.error("[Auth Callback] Token verification failed:", authError.message);
+          setError(authError.message || "Authentication failed");
+          setIsLoading(false);
+          return;
+        }
+      } else if (code) {
+        // PKCE flow fallback - exchange code for session
+        const { error: authError } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (authError) {
+          console.error("[Auth Callback] Code exchange failed:", authError.message);
           setError(authError.message || "Authentication failed");
           setIsLoading(false);
           return;
