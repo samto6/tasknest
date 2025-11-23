@@ -43,7 +43,7 @@ function AuthCallbackContent() {
       const supabase = supabaseBrowser();
       const { error: authError } = await supabase.auth.verifyOtp({
         token_hash,
-        type: type as "magiclink" | "email",
+        type: "email",
       });
 
       if (authError) {
