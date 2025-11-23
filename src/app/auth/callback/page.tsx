@@ -10,6 +10,8 @@ function AuthCallbackContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Support both PKCE flow (code) and token hash flow
+  const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type");
   const errorParam = searchParams.get("error");
@@ -25,30 +27,44 @@ function AuthCallbackContent() {
       return;
     }
 
-    if (!token_hash || !type) {
+    // Check for either PKCE code or token_hash
+    if (!code && (!token_hash || !type)) {
       setError("Invalid or missing authentication token");
     }
-  }, [token_hash, type, errorParam, errorDescription]);
+  }, [code, token_hash, type, errorParam, errorDescription]);
 
   const handleConfirm = async () => {
-    if (!token_hash || !type) {
-      setError("Invalid or missing authentication token");
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
     try {
       const supabase = supabaseBrowser();
-      const { error: authError } = await supabase.auth.verifyOtp({
-        token_hash,
-        type: "email",
-      });
 
-      if (authError) {
-        console.error("[Auth Callback] Token verification failed:", authError.message);
-        setError(authError.message || "Authentication failed");
+      if (code) {
+        // PKCE flow - exchange code for session
+        const { error: authError } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (authError) {
+          console.error("[Auth Callback] Code exchange failed:", authError.message);
+          setError(authError.message || "Authentication failed");
+          setIsLoading(false);
+          return;
+        }
+      } else if (token_hash && type) {
+        // Token hash flow - verify OTP
+        const { error: authError } = await supabase.auth.verifyOtp({
+          token_hash,
+          type: "email",
+        });
+
+        if (authError) {
+          console.error("[Auth Callback] Token verification failed:", authError.message);
+          setError(authError.message || "Authentication failed");
+          setIsLoading(false);
+          return;
+        }
+      } else {
+        setError("Invalid or missing authentication token");
         setIsLoading(false);
         return;
       }

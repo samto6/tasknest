@@ -45,40 +45,64 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12">
+    <main className="min-h-screen flex items-center justify-center p-6 bg-surface">
       <div className="w-full max-w-md">
-        {/* Floating Background Shapes */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-sage-green/10 rounded-full blur-2xl animate-float" />
-          <div className="absolute bottom-20 right-10 w-40 h-40 bg-soft-lavender/10 rounded-full blur-2xl animate-float-delayed" />
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            <span className="text-sage-green">Task</span>
+            <span className="text-foreground">Nest</span>
+          </h1>
+          <p className="text-muted">Tidy teamwork in one place</p>
         </div>
 
-        <div className="relative bg-surface border-2 border-border rounded-[12px] p-8 shadow-[6px_6px_0px_rgba(45,49,66,0.15)]">
-          <div className="text-center mb-8">
-            <h1 className="heading-2 mb-2">Get Started with TaskNest</h1>
-            <p className="text-muted">Create your account and start organizing your team</p>
-          </div>
-
+        {/* Card */}
+        <div className="bg-background border-2 border-border rounded-[12px] shadow-[8px_8px_0px_rgba(45,49,66,0.1)] p-6 md:p-8">
           {sent ? (
             <div className="text-center space-y-4">
-              <div className="p-4 bg-mint-green/10 border-2 border-mint-green/30 rounded-[8px]">
-                <p className="text-foreground font-medium mb-2">Check your email!</p>
-                <p className="text-sm text-muted">
-                  We&apos;ve sent a magic link to <strong>{email}</strong>. Click the link to complete your signup.
+              <div className="w-16 h-16 mx-auto bg-sage-green/10 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-sage-green"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Check your email</h2>
+                <p className="text-muted">
+                  We&apos;ve sent a magic link to <span className="font-medium text-foreground">{email}</span>
                 </p>
               </div>
-              <p className="text-sm text-muted">
-                Didn&apos;t receive it? Check your spam folder or{" "}
-                <button
-                  onClick={() => setSent(false)}
-                  className="text-sage-green font-medium hover:underline"
-                >
-                  try again
-                </button>
-              </p>
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => {
+                  setSent(false);
+                  setEmail("");
+                  setName("");
+                }}
+                className="w-full"
+              >
+                Send another link
+              </Button>
             </div>
           ) : (
-            <form onSubmit={handleSignup} className="space-y-4">
+            <form onSubmit={handleSignup} className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Create your account</h2>
+                <p className="text-sm text-muted">
+                  Enter your details to get started
+                </p>
+              </div>
+
               <Input
                 label="Full Name"
                 type="text"
@@ -90,18 +114,19 @@ export default function SignupPage() {
               />
 
               <Input
-                label="Email"
+                label="Email address"
                 type="email"
                 required
                 placeholder="you@school.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 error={error && !error.includes("name") ? error : undefined}
-                hint="We'll send you a magic link to sign in"
+                autoComplete="email"
               />
 
               <Button
                 type="submit"
+                variant="primary"
                 size="lg"
                 loading={loading}
                 className="w-full"
@@ -122,10 +147,11 @@ export default function SignupPage() {
           )}
         </div>
 
+        {/* Footer */}
         <p className="text-center text-sm text-muted mt-6">
-          By signing up, you agree to use TaskNest responsibly for organizing your student team projects.
+          By signing up, you agree to our terms and privacy policy
         </p>
       </div>
-    </div>
+    </main>
   );
 }
